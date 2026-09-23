@@ -1,0 +1,15 @@
+{
+  "name": "mmw",
+  "version": "1.0.0",
+  "title": "MMW Managed Memory Workspace",
+  "description": "Ultra-fast (<2ms) persistent memory workspace with strict tenant isolation and cross-model continuity for AI agents.",
+  "author": "msingatullin",
+  "homepage": "https://mmwhub.tech",
+  "endpoint": "https://mcp.mmwhub.tech/mcp",
+  "transport": "streamable-http",
+  "capabilities": {
+    "tools": true,
+    "prompts": true,
+    "resources": true
+  }
+}
