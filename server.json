@@ -1,0 +1,62 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "tech.mmwhub/mmw",
+  "title": "MMW Managed Memory Workspace",
+  "description": "Ultra-fast (<2ms) persistent memory workspace with strict tenant isolation for AI agents.",
+  "version": "1.0.0",
+  "websiteUrl": "https://mmwhub.tech",
+  "repository": {
+    "url": "https://github.com/msingatullin/mmw",
+    "source": "github"
+  },
+  "capabilities": {
+    "tools": {
+      "remember": {
+        "description": "Persist a long-term memory fact with provenance, source ID, and tags"
+      },
+      "search": {
+        "description": "Search stored memories using natural language and semantic filters"
+      },
+      "validate_memory": {
+        "description": "Validate memory consistency and resolve conflicts across sessions"
+      },
+      "forget": {
+        "description": "Remove or deprecate an obsolete memory item"
+      },
+      "gateway_call": {
+        "description": "Call project-scoped connected tools and external integrations"
+      }
+    }
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.mmwhub.tech/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer MMW API Token",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://mmwhub.tech/icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "800x800",
+        "any"
+      ]
+    },
+    {
+      "src": "https://mmwhub.tech/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    }
+  ]
+}

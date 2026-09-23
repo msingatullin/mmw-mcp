@@ -1,0 +1,14 @@
+startCommand:
+  type: http
+  url: "https://mcp.mmwhub.tech/mcp"
+  headers:
+    Authorization: "Bearer ${apiKey}"
+
+configSchema:
+  type: object
+  required:
+    - apiKey
+  properties:
+    apiKey:
+      type: string
+      description: "MMW API Key from https://app.mmwhub.tech"
