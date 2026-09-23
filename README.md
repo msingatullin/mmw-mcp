@@ -1,6 +1,6 @@
 # MMW (Managed Memory Workspace) — MCP Integration & Client Kit
 
-[![Smithery](https://img.shields.io/badge/Smithery-mmsingatullin%2Fmmw-orange?logo=server&style=flat-square)](https://smithery.ai/server/mmsingatullin/mmw)
+[![smithery badge](https://smithery.ai/badge/mmsingatullin/mmw)](https://smithery.ai/servers/mmsingatullin/mmw)
 [![Protocol](https://img.shields.io/badge/MCP-Streamable%20HTTP-blue?style=flat-square)](https://modelcontextprotocol.io)
 [![Latency](https://img.shields.io/badge/latency-%3C2ms-success?style=flat-square)](https://mmwhub.tech)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
