@@ -1,0 +1,49 @@
+# MMW Secret & Sensitive Data Boundary (.mmwignore)
+# Prevents autonomous AI agents from leaking credentials, keys, or personal data into MMW memory.
+
+# Environment & Secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa
+id_ed25519
+*.pfx
+*.p12
+
+# Cloud & Infrastructure Credentials
+.aws/
+.gcp/
+.azure/
+credentials
+secrets.json
+service-account*.json
+
+# API Keys & Auth Tokens
+*token*
+*secret*
+*password*
+*.htpasswd
+auth_tokens.json
+
+# Local IDE & OS Storage
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+*.sqlite
+*.db
+
+# Build Artifacts & Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+dist/
+build/
+*.vsix
+*.mcpb
