@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "websiteUrl": "https://mmwhub.tech",
   "repository": {
-    "url": "https://github.com/msingatullin/mmw",
+    "url": "https://github.com/msingatullin/mmw-mcp",
     "source": "github"
   },
   "capabilities": {
