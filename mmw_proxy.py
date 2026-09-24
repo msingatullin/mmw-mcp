@@ -51,6 +51,29 @@ def _is_auth_failed() -> bool:
         return time.time() < _AUTH_FAILURE_UNTIL["ts"]
 
 
+def _extract_word_stems(word: str) -> set[str]:
+    w = word.lower().strip(".,!?:;\"'()[]{}")
+    stems = {w}
+    if len(w) >= 4:
+        ru_suffixes = (
+            "ами", "ями", "ого", "его", "ому", "ему", "ыми", "ими",
+            "ов", "ев", "ей", "ой", "ом", "ем", "ам", "ям", "ах", "ях",
+            "ая", "яя", "ое", "ее", "ые", "ие", "ый", "ий", "ой",
+            "ть", "ти", "ли", "ла", "ло", "ет", "ут", "ют", "ит",
+            "а", "е", "и", "й", "о", "у", "ы", "ь", "я"
+        )
+        for s in ru_suffixes:
+            if w.endswith(s) and len(w) - len(s) >= 3:
+                stems.add(w[:-len(s)])
+                break
+        en_suffixes = ("ing", "ies", "es", "ed", "s")
+        for s in en_suffixes:
+            if w.endswith(s) and len(w) - len(s) >= 3:
+                stems.add(w[:-len(s)])
+                break
+    return stems
+
+
 def get_token() -> str:
     token = os.environ.get("MMW_TOKEN") or os.environ.get("MMW_CREDENTIAL")
     if not token and os.path.exists(CREDENTIAL_FILE):
@@ -457,20 +480,31 @@ def handle_request(req: dict) -> dict | None:
         elif tool_name == "search":
             query = args.get("query", "").lower()
             init_spool()
+            raw_terms = [t.lower().strip(".,!?:;\"'()[]{}") for t in query.split() if t.strip()]
+            search_stems = set()
+            for t in raw_terms:
+                search_stems.update(_extract_word_stems(t))
+
             conn = sqlite3.connect(SPOOL_DB)
             cur = conn.cursor()
             cur.execute("""
                 SELECT id, title, content, created_at, status
                 FROM spool_queue
-                WHERE (lower(content) LIKE ? OR lower(title) LIKE ?)
                 ORDER BY created_at DESC
-                LIMIT 10
-            """, (f"%{query}%", f"%{query}%"))
-            local_matches = [
-                {"id": r[0], "title": r[1], "content": r[2], "source": f"local_spool ({r[4]})", "created_at": r[3]}
-                for r in cur.fetchall()
-            ]
+                LIMIT 50
+            """)
+            all_spool = cur.fetchall()
             conn.close()
+
+            local_matches = []
+            for r in all_spool:
+                haystack = f"{r[1]} {r[2]}".lower()
+                if (search_stems and any(stem in haystack for stem in search_stems)) or (query and query in haystack):
+                    local_matches.append({
+                        "id": r[0], "title": r[1], "content": r[2], "source": f"local_spool ({r[4]})", "created_at": r[3]
+                    })
+                    if len(local_matches) >= 10:
+                        break
 
             remote_matches = []
             try:
