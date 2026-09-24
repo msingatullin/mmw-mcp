@@ -14,18 +14,34 @@ MMW provides ultra-fast (<2ms) persistent memory, tenant isolation, and cryptogr
 
 ## ⚡ Quickstart
 
-Get your API token at [**https://app.mmwhub.tech**](https://app.mmwhub.tech) and add the server to your favorite MCP client.
-
-- **Global Endpoint:** `https://mcp.mmwhub.tech/mcp`
-- **Supported Transports:** Streamable HTTP, SSE
-- **Protocol Versions:** `2025-11-25`, `2025-03-26`
+MMW supports two connection modes:
+1. **🛡 Local-First Resilient Spool (Recommended):** Zero data loss. Writes are persisted instantly (<1ms) to local SQLite (`~/.config/mmw/spool.db`) and synchronized in the background to MMW Cloud with automatic retries if offline or network fails.
+2. **🌐 Direct Cloud Remote:** Connects directly via Streamable HTTP (`https://mcp.mmwhub.tech/mcp`).
 
 ---
 
 ## 💻 Client Configuration
 
-### 1. Claude Desktop (`claude_desktop_config.json`)
+### 🛡 Mode A: Local-First Resilient Spool (No data loss)
 
+Run via standard Python MCP proxy:
+```json
+{
+  "mcpServers": {
+    "mmw": {
+      "command": "python3",
+      "args": ["-m", "mmw_mcp.spool_proxy"],
+      "env": {
+        "MMW_TOKEN": "<YOUR_MMW_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+### 🌐 Mode B: Direct Remote MCP
+
+#### 1. Claude Desktop (`claude_desktop_config.json`)
 ```json
 {
   "mcpServers": {
@@ -39,8 +55,7 @@ Get your API token at [**https://app.mmwhub.tech**](https://app.mmwhub.tech) and
 }
 ```
 
-### 2. Cursor (`~/.cursor/mcp.json`)
-
+#### 2. Cursor (`~/.cursor/mcp.json`)
 ```json
 {
   "mcpServers": {
