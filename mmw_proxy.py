@@ -39,6 +39,17 @@ SESSION_CACHE = {
     "lock": threading.Lock()
 }
 
+_AUTH_FAILURE_UNTIL = {"ts": 0.0}
+_AUTH_FAILURE_LOCK = threading.Lock()
+
+def _mark_auth_failure(cooldown: int = 300) -> None:
+    with _AUTH_FAILURE_LOCK:
+        _AUTH_FAILURE_UNTIL["ts"] = time.time() + cooldown
+
+def _is_auth_failed() -> bool:
+    with _AUTH_FAILURE_LOCK:
+        return time.time() < _AUTH_FAILURE_UNTIL["ts"]
+
 
 def get_token() -> str:
     token = os.environ.get("MMW_TOKEN") or os.environ.get("MMW_CREDENTIAL")
@@ -54,6 +65,7 @@ def get_token() -> str:
 def compute_idempotency_key(data: dict) -> str:
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
 
 
 def init_spool() -> None:
@@ -171,7 +183,7 @@ def call_remote(method: str, params: dict, is_mutation: bool = False, idempotenc
         headers["mcp-session-id"] = session_id
     if is_mutation:
         if not idempotency_key:
-            idempotency_key = hashlib.sha256(data).hexdigest()
+            raise ValueError("idempotency_key is required for mutations")
         headers["X-Idempotency-Key"] = idempotency_key
 
     req = urllib.request.Request(DEFAULT_ENDPOINT, data=data, headers=headers)
@@ -188,6 +200,7 @@ def call_remote(method: str, params: dict, is_mutation: bool = False, idempotenc
             with urllib.request.urlopen(req2, timeout=12) as resp2:
                 return json.loads(resp2.read().decode("utf-8"))
         elif e.code in (401, 403):
+            _mark_auth_failure()
             raise PermissionError(f"HTTP {e.code}: Authentication or tenant access denied ({e.reason})")
         raise
 
@@ -196,10 +209,15 @@ def sync_worker() -> None:
     """Background worker draining pending local items to remote cloud."""
     while True:
         try:
+            if _is_auth_failed():
+                time.sleep(30)
+                continue
+
             token = get_token()
             if not token:
                 time.sleep(5)
                 continue
+
 
             init_spool()
             conn = sqlite3.connect(SPOOL_DB)

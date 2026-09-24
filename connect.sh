@@ -195,12 +195,18 @@ PY
     echo "MMW client config written: $path"
     ;;
   codex)
-    cat <<EOF
+    codex_dir="$HOME/.codex"
+    codex_path="$codex_dir/config.toml"
+    mkdir -p "$codex_dir"
+    cat <<EOF > "$codex_path"
 [mcp_servers.mmw]
 url = "$ENDPOINT"
 bearer_token_env_var = "MMW_CREDENTIAL"
 EOF
+    chmod 600 "$codex_path"
+    echo "MMW Codex client config written: $codex_path"
     ;;
+
   generic)
     printf '%s\n' "$server_json"
     ;;
