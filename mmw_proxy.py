@@ -297,9 +297,20 @@ def sync_worker() -> None:
             time.sleep(5)
 
 
-def handle_request(req: dict) -> dict:
+def handle_request(req: dict) -> dict | None:
     method = req.get("method")
     req_id = req.get("id")
+
+    # JSON-RPC 2.0: notifications have no id and MUST NOT be answered
+    if req_id is None or (method and method.startswith("notifications/")):
+        return None
+
+    if method == "ping":
+        return {
+            "jsonrpc": "2.0",
+            "id": req_id,
+            "result": {}
+        }
 
     if method == "initialize":
         return {
@@ -510,16 +521,18 @@ def main():
         try:
             req = json.loads(line)
             res = handle_request(req)
-            sys.stdout.write(json.dumps(res) + "\n")
-            sys.stdout.flush()
+            if res is not None:
+                sys.stdout.write(json.dumps(res) + "\n")
+                sys.stdout.flush()
         except Exception as e:
-            err_res = {
-                "jsonrpc": "2.0",
-                "id": None,
-                "error": {"code": -32700, "message": str(e)}
-            }
-            sys.stdout.write(json.dumps(err_res) + "\n")
-            sys.stdout.flush()
+            if isinstance(req, dict) and req.get("id") is not None:
+                err_res = {
+                    "jsonrpc": "2.0",
+                    "id": req.get("id"),
+                    "error": {"code": -32700, "message": str(e)}
+                }
+                sys.stdout.write(json.dumps(err_res) + "\n")
+                sys.stdout.flush()
 
 
 if __name__ == "__main__":
