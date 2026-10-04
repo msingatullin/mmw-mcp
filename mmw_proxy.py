@@ -2,15 +2,18 @@
 """
 MMW Local-First Resilient MCP Proxy & Offline Spooler (v1.2.0)
 
+LEGACY: this proxy is no longer maintained. Use mmw-agent instead
+(see README.md and https://app.mmwhub.tech/help/user/quickstart).
+
 Features:
 1. Local SQLite spool database: ~/.config/mmw/spool.db
-2. Ultra-low latency (<1ms): remember() and forget() written locally immediately, returns success.
+2. Local-first writes: remember() and forget() are written to the local spool first, then return.
 3. Background synchronization: Asynchronously flushes spool queue to remote MMW cloud with exponential backoff.
 4. Deterministic Idempotency: Generates and attaches X-Idempotency-Key (SHA256 of canonical payload) on all mutations.
 5. Session Resumption: Manages mcp-session-id across requests and automatically reconnects on expiration.
 6. Graceful 401/403 Handling: Detects auth issues, pauses retry churn, and preserves pending items safely.
 7. Unified search(): Merges remote cloud results with un-synced local spool items.
-8. Standard stdio transport: Compatible with Cursor, VS Code, Windsurf, Claude Desktop, and GigaAgent.
+8. Standard stdio transport: Works with stdio MCP clients (Cursor, VS Code, Windsurf, Claude Desktop, etc.).
 """
 
 from __future__ import annotations
@@ -28,7 +31,7 @@ import urllib.request
 
 SPOOL_DIR = os.path.expanduser("~/.config/mmw")
 SPOOL_DB = os.path.join(SPOOL_DIR, "spool.db")
-DEFAULT_ENDPOINT = os.environ.get("MMW_ENDPOINT", "https://mcp.mmwhub.ru/mcp")
+DEFAULT_ENDPOINT = os.environ.get("MMW_ENDPOINT", "https://mcp.mmwhub.tech/mcp")
 DEFAULT_WORKSPACE = os.environ.get("MMW_WORKSPACE", "default")
 CREDENTIAL_FILE = os.path.join(SPOOL_DIR, "credential")
 
@@ -348,7 +351,7 @@ def handle_request(req: dict) -> dict | None:
                     "name": "MMW Local-First Resilient MCP Proxy",
                     "version": "1.2.0"
                 },
-                "instructions": "MMW Local-First Memory: Writes are spooled locally with zero-loss guarantee and flushed to Cloud.ru sovereign core."
+                "instructions": "MMW Local-First Memory (legacy proxy): writes are spooled locally and flushed to the MMW memory server."
             }
         }
 
