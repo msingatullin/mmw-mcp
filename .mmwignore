@@ -1,5 +1,7 @@
 # MMW Secret & Sensitive Data Boundary (.mmwignore)
-# Prevents autonomous AI agents from leaking credentials, keys, or personal data into MMW memory.
+# Example convention for your own agent instructions: paths whose contents agents should not
+# store in MMW memory. NOTE: this file is NOT read or enforced by the MMW server or by mmw-agent.
+# Server-side redaction of secrets happens independently of this file.
 
 # Environment & Secrets
 .env
