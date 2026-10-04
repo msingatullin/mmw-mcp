@@ -2,8 +2,8 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "name": "mmw",
   "title": "MMW Managed Memory Workspace",
-  "description": "Ultra-fast (<2ms) persistent memory workspace with strict tenant isolation and cross-session synchronization for AI agents.",
+  "description": "Persistent memory for AI agents over MCP: remember/search across sessions and tools, tenant isolation, organization spaces with roles and visibility.",
   "homepage": "https://mmwhub.tech",
-  "repository": "https://github.com/msingatullin/mmw",
+  "repository": "https://github.com/msingatullin/mmw-mcp",
   "keywords": ["memory", "persistent-memory", "knowledge-graph", "ai-agents", "agentic-memory", "streamable-http", "claude", "cursor"]
 }
