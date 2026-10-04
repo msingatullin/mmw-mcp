@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
+# MMW Connect Kit: writes a direct remote MCP connection into client configs.
+# WARNING (see README.md, "Connect Kit"):
+#   - without --client it configures every detected client;
+#   - --client codex OVERWRITES ~/.codex/config.toml entirely;
+#   - --client claude APPENDS an MMW instruction block to ~/.claude/CLAUDE.md
+#     and may register the legacy mmw_proxy.py in Claude Code CLI;
+#   - --uninstall deletes the generated client config files and the stored key.
+# Run with --dry-run first. The recommended client is mmw-agent (see README.md).
 set -euo pipefail
 
-ENDPOINT="${MMW_ENDPOINT:-https://mcp.mmwhub.ru/mcp}"
+ENDPOINT="${MMW_ENDPOINT:-https://mcp.mmwhub.tech/mcp}"
 WORKSPACE="${MMW_WORKSPACE:-default}"
 CLIENT=""
 VERIFY=0
@@ -16,7 +24,7 @@ Options:
   --client <name>    Client type: all | vscode | windsurf | cursor | claude | gemini | codex | generic
                      (Default: all detected environments on this machine)
   --workspace <name> Workspace label. Default: default
-  --endpoint <url>   MCP endpoint URL. Default: https://mcp.mmwhub.ru/mcp
+  --endpoint <url>   MCP endpoint URL. Default: https://mcp.mmwhub.tech/mcp
   --dry-run          Preview generated configuration without writing files
   --verify           Execute live initialize handshake to verify connection
   --uninstall        Remove generated client configuration and cached credentials
@@ -26,6 +34,11 @@ Environment:
   MMW_CREDENTIAL     MMW bearer token. If omitted, prompts securely or reads ~/.config/mmw/credential
   MMW_ENDPOINT       MCP endpoint URL
   MMW_WORKSPACE      Workspace label
+
+Warning:
+  --client codex overwrites ~/.codex/config.toml entirely (back it up first).
+  --client claude appends an MMW instruction block to ~/.claude/CLAUDE.md.
+  --uninstall deletes the generated client config files, not only the mmw entry.
 EOF
 }
 
