@@ -25,7 +25,7 @@ The `.mmwignore` file in this repository is an example convention for your own a
 ## Memory guidelines
 1. Check context with MMW `search` before asking repetitive questions about project architecture.
 2. Record permanent requirements and decisions with MMW `remember`.
-3. Pass `source_id` / `source_hash` and `fact_key` where possible, so records can be checked for freshness and conflicts
+3. Pass `source_id` / `source_hash` and `fact_key` where possible, so records can be checked for freshness
    and conflicting facts are detected.
 ```
 
