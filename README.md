@@ -163,7 +163,8 @@ Integrations connected to a project (for example `github_readonly`) may also app
 | `content` | Record text (required). |
 | `workspace` | Workspace, default `default`. |
 | `scope` | Label for filtering (`shared`, `private`, …). It does not restrict access; in organizations access is governed by visibility. |
-| `source`, `source_id`, `source_hash`, `source_revision` | Where the record comes from; with `source_hash` the record is verified. |
+| `source`, `source_id`, `source_hash`, `source_revision` | Where the record comes from. This is provenance, not proof: a new record is always `unverified`; `source_hash` is later used to check freshness. |
+| `derived_from` | IDs of the records this one summarizes. Their conflicts and staleness stay visible on the summary. |
 | `fact_key` | Fact key: records with the same key are compared for conflicts. |
 | `confidence` | 0–1, default 0.5. |
 
@@ -180,7 +181,7 @@ The `X-Idempotency-Key` header makes retries safe: the same key with the same co
 | `current_source_hash` | Fresh source hash: outdated records become `stale`. |
 | `exclude_stale` | Hide outdated records. |
 
-Returns records with source, confidence, status (`verified`, `unverified`, `stale`, `conflict`) and graph links (`graph_relations`).
+Returns records with source, confidence, status (`unverified`, `stale`, `conflict`), `derived_from` and graph links (`graph_relations`). A summary inherits `conflict` or `stale` from its source records.
 
 ### `forget`
 
