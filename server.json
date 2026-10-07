@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.msingatullin/mmw",
   "title": "MMW Managed Memory Workspace",
-  "description": "Persistent memory for AI agents over MCP, with tenant isolation and organization spaces.",
-  "version": "1.1.0",
+  "description": "Memory for AI agents you can trust: one memory across Claude Code, Cursor, Codex and ChatGPT that flags contradicting facts and keeps the source of every fact.",
+  "version": "1.2.0",
   "websiteUrl": "https://mmwhub.tech",
   "repository": {
     "url": "https://github.com/msingatullin/mmw-mcp",
@@ -12,16 +12,16 @@
   "capabilities": {
     "tools": {
       "remember": {
-        "description": "Persist a long-term memory fact with provenance, source ID, and tags"
+        "description": "Save a fact or decision with its source; facts with the same key that disagree are flagged as a conflict"
       },
       "search": {
-        "description": "Search stored memories using natural language and semantic filters"
+        "description": "Search memories with provenance and stale/conflict status; the newest version of a fact comes first"
       },
       "validate_memory": {
-        "description": "Validate memory consistency and resolve conflicts across sessions"
+        "description": "Check the records of one source against its current hash and report stale and conflicting ones"
       },
       "forget": {
-        "description": "Remove or deprecate an obsolete memory item"
+        "description": "Soft-delete a memory or every memory of a source"
       },
       "gateway_call": {
         "description": "Call project-scoped connected tools and external integrations"
