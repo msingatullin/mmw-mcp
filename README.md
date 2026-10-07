@@ -5,9 +5,9 @@
 [![Protocol](https://img.shields.io/badge/MCP-Streamable%20HTTP-blue?style=flat-square)](https://modelcontextprotocol.io)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-Connection guides and client configuration for [MMW](https://mmwhub.tech).
+Connection guides and client configuration for [MMW](https://mmwhub.tech) — memory for AI agents you can trust.
 
-User documentation: **https://app.mmwhub.tech/help/user/quickstart**
+User documentation: **https://docs.mmwhub.tech** · Русская версия: **[README.ru.md](README.ru.md)**
 
 ---
 
@@ -31,6 +31,17 @@ What MMW does not do:
 
 ---
 
+## What makes MMW different
+
+Memory is only useful if the agent can trust it. The dangerous failure is not forgetting — it is an agent confidently answering with an outdated fact. MMW is built around that:
+
+- **Contradictions are surfaced, not hidden.** Records with the same `fact_key` that disagree are flagged `conflict`. Search returns the newest version first, older ones carry `superseded_by`. In the account, "Needs a decision" turns each dispute into one plain question — "which one is right?" — with the options side by side; "Help me decide" asks a language model to phrase the question (only on click). The person decides; nothing is overwritten silently.
+- **Fact passport.** Every record shows where it came from, when, its source hash, every version of the same fact and the links that replaced it.
+- **Source anchoring.** When `source_id` is a file path, `mmw-agent` hashes the file itself; if the file changes, records from it come back `stale`.
+- **One memory everywhere.** Claude Code, Cursor, Codex, Claude Desktop, claude.ai, ChatGPT, a Telegram bot and (in Russia) Alice share the same memory. The account shows which apps are connected and when each was last seen.
+
+---
+
 ## Quickstart
 
 1. Sign up at https://app.mmwhub.tech and confirm your email.
@@ -43,7 +54,7 @@ What MMW does not do:
 Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/) (the `uvx` command). The agent is not published on PyPI; `uvx` fetches the wheel on first start:
 
 ```
-https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl
+https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl
 ```
 
 **Claude Code**
@@ -52,7 +63,7 @@ https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl
 claude mcp add mmw \
   -e MMW_API_KEY=mmw_your_key \
   -e MMW_ENDPOINT=https://mcp.mmwhub.tech \
-  -- uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl mmw-agent
+  -- uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl mmw-agent
 ```
 
 Or add the `mcpServers.mmw` block below to `~/.claude.json` by hand.
@@ -66,7 +77,7 @@ Or add the `mcpServers.mmw` block below to `~/.claude.json` by hand.
       "command": "uvx",
       "args": [
         "--from",
-        "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl",
+        "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl",
         "mmw-agent"
       ],
       "env": {
@@ -83,7 +94,7 @@ Or add the `mcpServers.mmw` block below to `~/.claude.json` by hand.
 ```toml
 [mcp_servers.mmw]
 command = "uvx"
-args = ["--from", "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl", "mmw-agent"]
+args = ["--from", "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl", "mmw-agent"]
 env = { MMW_API_KEY = "mmw_your_key", MMW_ENDPOINT = "https://mcp.mmwhub.tech" }
 ```
 
@@ -93,7 +104,7 @@ Check from a terminal:
 
 ```bash
 MMW_API_KEY=mmw_your_key MMW_ENDPOINT=https://mcp.mmwhub.tech \
-  uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.3-py3-none-any.whl mmw-agent status
+  uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl mmw-agent status
 ```
 
 #### Agent commands
@@ -104,6 +115,8 @@ MMW_API_KEY=mmw_your_key MMW_ENDPOINT=https://mcp.mmwhub.tech \
 | `mmw-agent consent` | Allow uploading session history. Interactive terminal only; a person must answer. |
 | `mmw-agent revoke` | Withdraw consent: uploads stop immediately. |
 | `mmw-agent status` | Local consent state and how many sources the server already has. |
+| `mmw-agent hook-stop` | Claude Code Stop hook: does not let a turn end when files changed after the last `remember`. |
+| `mmw-agent support CODE` | Opens a support session with the one-time code from the account: the operator sees only the diagnostics you agree to send and proposes fixes you approve one by one. |
 
 #### Agent environment variables
 
@@ -181,7 +194,7 @@ The `X-Idempotency-Key` header makes retries safe: the same key with the same co
 | `current_source_hash` | Fresh source hash: outdated records become `stale`. |
 | `exclude_stale` | Hide outdated records. |
 
-Returns records with source, confidence, status (`unverified`, `stale`, `conflict`), `derived_from` and graph links (`graph_relations`). A summary inherits `conflict` or `stale` from its source records.
+Returns records with source, confidence, status (`unverified`, `stale`, `conflict`), `derived_from` and graph links (`graph_relations`). The newest record of a `fact_key` ranks first; older versions carry `superseded_by`. A summary inherits `conflict` or `stale` from its source records.
 
 ### `forget`
 
@@ -306,7 +319,7 @@ $env:MMW_CREDENTIAL='mmw_your_key'
 
 - Website: https://mmwhub.tech
 - Account and API keys: https://app.mmwhub.tech
-- User documentation: https://app.mmwhub.tech/help/user/quickstart
+- User documentation: https://docs.mmwhub.tech (Russian: https://docs.mmwhub.ru)
 - MCP endpoint: https://mcp.mmwhub.tech/mcp
 - Smithery: https://smithery.ai/servers/mmsingatullin/mmw
 - Support: support@mmwhub.tech
