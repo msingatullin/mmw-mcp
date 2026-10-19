@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.msingatullin/mmw",
   "title": "MMW Managed Memory Workspace",
-  "description": "Memory for AI agents you can trust: one memory across Claude Code, Cursor, Codex and ChatGPT that flags contradicting facts and keeps the source of every fact.",
+  "description": "One memory for AI agents in Claude Code, Cursor, Codex and ChatGPT that flags conflicting facts.",
   "version": "1.2.0",
   "websiteUrl": "https://mmwhub.tech",
   "repository": {
