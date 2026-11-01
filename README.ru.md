@@ -30,7 +30,7 @@
 ```bash
 claude mcp add mmw -s user \
   -e MMW_API_KEY=mmw_ваш_ключ \
-  -- uvx --from https://app.mmwhub.ru/downloads/mmw-agent/mmw_agent-0.1.6-py3-none-any.whl mmw-agent
+  -- uvx --from https://app.mmwhub.ru/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl mmw-agent
 ```
 
 **Cursor, Claude Desktop, Codex, ChatGPT, VS Code, Telegram, Алиса** — пошагово в документации: https://docs.mmwhub.ru/clients/overview/
@@ -71,6 +71,8 @@ claude mcp add mmw -s user \
 - Сайт: https://mmwhub.ru
 - Кабинет и ключи: https://app.mmwhub.ru
 - Документация: https://docs.mmwhub.ru
+- Skill для агента (учит Claude Code и Codex, когда искать и сохранять): https://docs.mmwhub.ru/memory/agent-skill/
+- Встроить MMW в свой продукт: https://docs.mmwhub.ru/developers/integrate/
 - MCP: https://mcp.mmwhub.ru/mcp
 - Поддержка: support@mmwhub.tech
 
