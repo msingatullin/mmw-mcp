@@ -2,31 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.msingatullin/mmw",
   "title": "MMW Managed Memory Workspace",
-  "description": "One memory for AI agents in Claude Code, Cursor, Codex and ChatGPT that flags conflicting facts.",
-  "version": "1.2.0",
+  "description": "Shared memory across AI agents, with source-aware facts and visible conflicts.",
+  "version": "1.2.1",
   "websiteUrl": "https://mmwhub.tech",
   "repository": {
     "url": "https://github.com/msingatullin/mmw-mcp",
     "source": "github"
-  },
-  "capabilities": {
-    "tools": {
-      "remember": {
-        "description": "Save a fact or decision with its source; facts with the same key that disagree are flagged as a conflict"
-      },
-      "search": {
-        "description": "Search memories with provenance and stale/conflict status; the newest version of a fact comes first"
-      },
-      "validate_memory": {
-        "description": "Check the records of one source against its current hash and report stale and conflicting ones"
-      },
-      "forget": {
-        "description": "Soft-delete a memory or every memory of a source"
-      },
-      "gateway_call": {
-        "description": "Call project-scoped connected tools and external integrations"
-      }
-    }
   },
   "remotes": [
     {

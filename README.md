@@ -1,287 +1,113 @@
-# MMW (Managed Memory Workspace) — MCP connection kit
+# MMW — shared memory across AI agents
 
-[![smithery badge](https://smithery.ai/badge/mmsingatullin/mmw)](https://smithery.ai/servers/mmsingatullin/mmw)
-[![MMW MCP connector](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw/badges/score.svg)](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw)
-[![Protocol](https://img.shields.io/badge/MCP-Streamable%20HTTP-blue?style=flat-square)](https://modelcontextprotocol.io)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+**Shared memory across AI agents, with source-aware facts and visible conflicts.**
 
-Connection guides and client configuration for [MMW](https://mmwhub.tech) — memory for AI agents you can trust.
+Save a decision in ChatGPT. Find the same record in Codex or linked Telegram. Keep its source and review conflicting information instead of copying context between chats.
 
-User documentation: **https://docs.mmwhub.tech** · Русская версия: **[README.ru.md](README.ru.md)**
+[Get started](https://docs.mmwhub.tech/start/quickstart/) · [Create an account](https://app.mmwhub.tech/signup) · [Documentation](https://docs.mmwhub.tech/) · [Русский](README.ru.md)
 
----
+[![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](https://modelcontextprotocol.io/)
+[![Client kit: MIT](https://img.shields.io/badge/client_kit-MIT-green)](LICENSE)
 
-## What MMW is
+## What you can use
 
-MMW is a memory server for the Model Context Protocol (MCP). Your agent (Claude, Codex, Cursor or any MCP client) stores facts, decisions and agreements in MMW and finds them again in later sessions. Memory is not tied to one model or one computer.
+- **Shared memory:** connected clients save and retrieve records in the same authorized account, project and workspace. Client credentials need not be identical.
+- **Sources and review:** attach `source_id` and other provenance fields. Conflicts, stale-source indicators and explicit fact review help distinguish saved claims from reviewed facts. An upload date or a model output does not establish factual currency.
+- **MMW AI Archivist:** eligible new notes can be organized automatically. Privacy withdrawals and access rules apply. The AI assistant helps phrase conflict questions; the person makes the decision. See [processing boundaries](https://docs.mmwhub.tech/memory/archivist/).
+- **Applications and teams:** integrate through MCP and use the account to manage records and access. Organization features require setup with MMW; they are not automatically enabled for every Free account.
 
-Every user has a personal space. Companies create organizations: units, roles, visibility rules and knowledge handover when someone leaves.
+MMW is a hosted platform. **This repository contains the public connection kit, not the private backend.** MIT applies to the files in this repository, not to a promise of an open-source hosted service.
 
-Components:
+MMW does not automatically read all your conversations or connect unrelated accounts. Local session uploads are separately opt-in. `scope=shared` is a search label, not an access grant. Source metadata is provenance, not proof of truth. Do not store credentials or rely on redaction as a guarantee that all secrets will be detected.
 
-- **Memory server:** `https://mcp.mmwhub.tech/mcp` — MCP over Streamable HTTP, stateless (every request stands on its own), JSON responses, API key authentication.
-- **Local agent `mmw-agent`:** connects your MCP client to the server over stdio and, only with your consent, uploads Claude Code and Codex session history.
-- **Account:** https://app.mmwhub.tech — API keys, projects, memory records, organizations, plan.
+## Start in three steps
 
-What MMW does not do:
+1. [Register and verify your email](https://app.mmwhub.tech/signup). The initial Free memory account is created automatically: a **3-day trial**, no payment card or initial paid-plan selection required.
+2. Connect one supported client using one of the routes below. Connect the second client to the **same project**.
+3. Save this invented note in the first client, then ask the second client to retrieve it:
 
-- It does not read your conversations on its own: memory contains what your agent saved with `remember`, plus the sessions you explicitly allowed to upload.
-- **Search over uploaded sessions and automatic fact extraction from them are not available yet.** Sessions are stored but do not appear in search results.
-- It does not keep secrets: keys, tokens and passwords are replaced with placeholders before anything is stored.
-
----
-
-## What makes MMW different
-
-Memory is only useful if the agent can trust it. The dangerous failure is not forgetting — it is an agent confidently answering with an outdated fact. MMW is built around that:
-
-- **Contradictions are surfaced, not hidden.** Records with the same `fact_key` that disagree are flagged `conflict`. Search returns the newest version first, older ones carry `superseded_by`. In the account, "Needs a decision" turns each dispute into one plain question — "which one is right?" — with the options side by side; "Help me decide" asks a language model to phrase the question (only on click). The person decides; nothing is overwritten silently.
-- **Fact passport.** Every record shows where it came from, when, its source hash, every version of the same fact and the links that replaced it.
-- **Source anchoring.** When `source_id` is a file path, `mmw-agent` hashes the file itself; if the file changes, records from it come back `stale`.
-- **One memory everywhere.** Claude Code, Cursor, Codex, Claude Desktop, claude.ai, ChatGPT and a Telegram bot share the same memory. The account shows which apps are connected and when each was last seen.
-
----
-
-## Quickstart
-
-1. Sign up at https://app.mmwhub.tech and confirm your email.
-2. Choose a plan. Free is a 3-day trial, no card required.
-3. Copy your API key (it starts with `mmw_`). It is shown once — store it in a password manager.
-4. Connect your client (below), restart it, and ask the agent: *"Remember in MMW: staging is deployed with the systemd unit app-staging."* In a new session: *"Search MMW for how to deploy staging."*
-
-### Recommended: the local agent `mmw-agent` (Claude Code, Claude Desktop, Cursor, Codex)
-
-Requirements: Python 3.11+ and [uv](https://docs.astral.sh/uv/) (the `uvx` command). The agent is not published on PyPI; `uvx` fetches the wheel on first start:
-
-```
-https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl
+```text
+Save a separate MMW test note:
+MMWFIRSTCHECK7429. Decision: prepare the team report on Fridays.
+workspace=default, scope=shared, source_id=first-memory-check-7429.
+Return the saved record ID.
 ```
 
-**Claude Code**
-
-```bash
-claude mcp add mmw \
-  -e MMW_API_KEY=mmw_your_key \
-  -e MMW_ENDPOINT=https://mcp.mmwhub.tech \
-  -- uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl mmw-agent
+```text
+Use MMW to find MMWFIRSTCHECK7429 in workspace default.
+Return its original ID and source_id. If unavailable, do not guess.
 ```
 
-Or add the `mcpServers.mmw` block below to `~/.claude.json` by hand.
+Compare the **record ID and source_id**. Similar wording alone is not a successful shared-memory test. In linked Telegram, use `/find MMWFIRSTCHECK7429`. Delete only the test record by its returned ID after checking.
 
-**Claude Desktop and Cursor** — the same JSON block: for Claude Desktop in `claude_desktop_config.json` (Settings → Developer → Edit config), for Cursor in `~/.cursor/mcp.json`.
+### ChatGPT or a web connector: OAuth
 
-```json
-{
-  "mcpServers": {
-    "mmw": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl",
-        "mmw-agent"
-      ],
-      "env": {
-        "MMW_API_KEY": "mmw_your_key",
-        "MMW_ENDPOINT": "https://mcp.mmwhub.tech"
-      }
-    }
-  }
-}
-```
+Use the [official MMW ChatGPT app](https://chatgpt.com/plugins/plugin_asdk_app_6ac22b6361d481919cbaecd880a4c9ca), if available in your account. Authorize the intended project on MMW's page. No local agent is required. Availability depends on the client's plan and settings.
 
-**Codex** — `~/.codex/config.toml`:
+For other web clients that support remote MCP, use `https://mcp.mmwhub.tech/mcp` and follow their OAuth flow. [ChatGPT](https://docs.mmwhub.tech/clients/chatgpt/) · [Claude web](https://docs.mmwhub.tech/clients/claude-web/).
+
+### Codex, Cursor or another remote MCP client
+
+The endpoint is **`https://mcp.mmwhub.tech/mcp`**. Create a project key in the account and enter it through your client's protected local credential mechanism. Do not paste it into an assistant chat, a command committed to Git or a support log.
+
+Codex reads TOML configuration; a direct connection can use an environment variable:
 
 ```toml
 [mcp_servers.mmw]
-command = "uvx"
-args = ["--from", "https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl", "mmw-agent"]
-env = { MMW_API_KEY = "mmw_your_key", MMW_ENDPOINT = "https://mcp.mmwhub.tech" }
+url = "https://mcp.mmwhub.tech/mcp"
+bearer_token_env_var = "MMW_API_KEY"
 ```
 
-After a restart the client shows `remember`, `search`, `search_history`, `forget`, `validate_memory`, `gateway_call`, `mmw_sync_status` and `spool_status`.
-
-Check from a terminal:
+For a temporary Bash session, enter the value locally without putting it in shell history:
 
 ```bash
-MMW_API_KEY=mmw_your_key MMW_ENDPOINT=https://mcp.mmwhub.tech \
-  uvx --from https://app.mmwhub.tech/downloads/mmw-agent/mmw_agent-0.1.14-py3-none-any.whl mmw-agent status
+read -rsp 'MMW API key: ' MMW_API_KEY; echo
+export MMW_API_KEY
+codex
 ```
 
-#### Agent commands
+Use your client's protected credential storage for persistent use. JSON-based clients have a different configuration format. [Codex](https://docs.mmwhub.tech/clients/codex/) · [Cursor](https://docs.mmwhub.tech/clients/cursor/) · [All clients](https://docs.mmwhub.tech/clients/overview/).
 
-| Command | What it does |
+### Optional local agent
+
+For stdio-only clients or separately consented session uploads, use `mmw-agent`. Python 3.11+ and [uv](https://docs.astral.sh/uv/) are required. The wheel is distributed by MMW, not PyPI. The [agent guide](https://docs.mmwhub.tech/agent/overview/) is the canonical installation/version source; this README does not duplicate its release number.
+
+Setup asks for the key locally. Session uploads are optional and are not required for `remember` or `search`. Review the upload scope before running `mmw-agent consent`; stop future uploads with `mmw-agent revoke`. Revoking uploads is distinct from deleting existing records or controlling server-side AI processing in Privacy.
+
+## MCP reference
+
+Read the actual `tools/list` for your connection. Catalog apps, direct MCP and the local agent may expose different subsets.
+
+| Tool | Purpose |
 | :--- | :--- |
-| `mmw-agent` | Runs as an MCP server over stdio (this is how your client starts it). |
-| `mmw-agent consent` | Allow uploading session history. Interactive terminal only; a person must answer. |
-| `mmw-agent revoke` | Withdraw consent: uploads stop immediately. |
-| `mmw-agent status` | Local consent state and how many sources the server already has. |
-| `mmw-agent hook-stop` | Claude Code Stop hook: does not let a turn end when files changed after the last `remember`. |
-| `mmw-agent support CODE` | Opens a support session with the one-time code from the account: the operator sees only the diagnostics you agree to send and proposes fixes you approve one by one. |
+| `remember` | Save a note with optional source and workspace metadata. |
+| `search` | Retrieve authorized records; inspect provenance and conflict/stale annotations. |
+| `validate_memory` | Compare source records with a supplied current source hash. |
+| `forget` | Delete a record or authorized records of a source. |
+| `preview_search`, `read_memory` | Bounded discovery and record reading, where exposed by the client profile. |
+| `search_history` | Uploaded session search where supported by the connection and permissions. It does not grant access to unsynced chats. |
 
-#### Agent environment variables
+`gateway_call` and experimental external dispatch are **not part of the public Core memory workflow**. A retained tool schema is not evidence of an enabled integration. Local agent diagnostics are separate from server memory tools.
 
-| Variable | Purpose |
-| :--- | :--- |
-| `MMW_API_KEY` | API key from your account (required). |
-| `MMW_ENDPOINT` | Server address. Set `https://mcp.mmwhub.tech`. |
-| `MMW_LANG` | Message language, `en` or `ru` (default depends on the server address). |
-| `MMW_AGENT_HOME` | Agent state directory, default `~/.mmw`. |
-
-The agent forwards every call to the server, so the client sees the full list of server tools. If the server is unreachable at start-up, the client does not fail: the agent answers locally and connects when the server is back.
-
-### claude.ai (web) — OAuth connector
-
-1. Settings → Connectors → Add custom connector.
-2. URL: `https://mcp.mmwhub.tech/mcp`
-3. On the MMW authorization page paste your API key and choose Allow. Claude receives its own 30-day token (OAuth with PKCE); your key is not shared with claude.ai.
-
-The local agent does not run in the web app, so session sync is not available there.
-
-### Any other MCP client — direct remote HTTP
-
-If your client (for example VS Code or another MCP client) supports remote MCP servers over Streamable HTTP, connect without the agent:
+Example **tool arguments**, not standalone HTTP requests:
 
 ```json
-{
-  "mcpServers": {
-    "mmw": {
-      "url": "https://mcp.mmwhub.tech/mcp",
-      "headers": { "Authorization": "Bearer mmw_your_key" }
-    }
-  }
-}
+{"content":"MMWFIRSTCHECK7429. Team report: Fridays.","workspace":"default","scope":"shared","source_id":"first-memory-check-7429"}
 ```
 
-The exact key names (`url`, `headers`) differ between clients; check your client's MCP documentation. Session sync and `mmw_sync_status` are only available through `mmw-agent`.
+```json
+{"query":"MMWFIRSTCHECK7429","workspace":"default","limit":5}
+```
 
----
+[Complete contracts](https://docs.mmwhub.tech/reference/mcp-tools/) · [Source and freshness](https://docs.mmwhub.tech/memory/source-and-freshness/) · [Shared-memory troubleshooting](https://docs.mmwhub.tech/guide/shared-memory/).
 
-## MCP tools
+## Access, privacy and limits
 
-| Tool | Where | Description |
-| :--- | :--- | :--- |
-| `remember` | server | Store a memory record. |
-| `search` | server | Find records by query. |
-| `forget` | server | Delete a record or all records of a source. |
-| `validate_memory` | server | Check records of a source against its current hash. |
-| `gateway_call` | server | Call a tool of an integration connected to the key's project. |
-| `mmw_sync_status` | `mmw-agent` only | Read-only: whether session-sync consent was given and how the last sync cycle went. |
+Authorization and project/organization access rules apply to every connection. A client must be linked and authorized before it can read a record. Do not weaken permissions to make a demo succeed.
 
-Integrations connected to a project (for example `github_readonly`) may also appear as tools, but only for keys of that project.
+Review [data and deletion](https://docs.mmwhub.tech/account/data-and-deletion/) and [security](https://docs.mmwhub.tech/account/security/). Automatic organization can use external AI processing under the applicable service terms; privacy controls remain available. Model output does not automatically confirm a fact. Deleting live data and retention in an existing backup are separate operations.
 
-### `remember`
-
-| Parameter | Description |
-| :--- | :--- |
-| `content` | Record text (required). |
-| `workspace` | Workspace, default `default`. |
-| `scope` | Label for filtering (`shared`, `private`, …). It does not restrict access; in organizations access is governed by visibility. |
-| `source`, `source_id`, `source_hash`, `source_revision` | Where the record comes from. This is provenance, not proof: a new record is always `unverified`; `source_hash` is later used to check freshness. |
-| `derived_from` | IDs of the records this one summarizes. Their conflicts and staleness stay visible on the summary. |
-| `fact_key` | Fact key: records with the same key are compared for conflicts. |
-| `confidence` | 0–1, default 0.5. |
-
-The `X-Idempotency-Key` header makes retries safe: the same key with the same content returns the same record.
-
-### `search`
-
-| Parameter | Description |
-| :--- | :--- |
-| `query` | Query text. |
-| `workspace` | Workspace. |
-| `scope` | Label filter. |
-| `limit` | 1–50, default 10. |
-| `current_source_hash` | Fresh source hash: outdated records become `stale`. |
-| `exclude_stale` | Hide outdated records. |
-
-Returns records with source, confidence, status (`unverified`, `stale`, `conflict`), `derived_from` and graph links (`graph_relations`). The newest record of a `fact_key` ranks first; older versions carry `superseded_by`. A summary inherits `conflict` or `stale` from its source records.
-
-### `forget`
-
-`memory_id` deletes one record; `source_id` deletes every record of that source. Deleted records leave search and graph links; the deletion is kept for audit. In an organization you can only delete what you can see.
-
-### `validate_memory`
-
-`source_id` and `current_source_hash`: how many records of the source were checked, which are stale and which conflict.
-
-### `gateway_call`
-
-`server`, `tool`, `arguments`: calls a tool of a connected integration on behalf of the project. Integration secrets stay on the server and never reach the agent. Integrations are enabled in the account under MCP Gateway.
-
----
-
-## Session sync (opt-in, `mmw-agent` only)
-
-- **Consent:** without consent not a single byte leaves your computer. Run `mmw-agent consent` in a terminal: the agent shows how many sessions it found and asks for permission. A model or a script cannot give consent. Stop at any time with `mmw-agent revoke`.
-- **Uploaded:** user and assistant messages, tool calls, tool results up to 4,000 characters, from Claude Code and Codex.
-- **Not uploaded:** model reasoning, system prompts, token counters, file snapshots, file paths.
-- **Secrets** (API keys, tokens, passwords) are replaced on your computer before upload and again on the server.
-- **Reliability:** the server remembers up to which byte it accepted each file. After a network drop, a restart or a server restore, the agent sends what is missing. If the server is temporarily low on space, the agent waits and resumes later.
-- **Not available yet:** search over uploaded sessions and extracting facts from them into memory. Today sessions are stored (compressed) but do not appear in search results.
-
-Session history volume by plan (newest sessions first; counted on the cleaned text):
-
-| Plan | History volume | Depth |
-| :--- | :--- | :--- |
-| Free | 25 MB | 7 days |
-| Starter | 100 MB | 30 days |
-| Pro | 500 MB | 90 days |
-| Enterprise and organizations | 20 GB | full history |
-
----
-
-## Organizations
-
-- **Spaces:** one login, one personal space and any number of organizations, with a switcher in the account. An organization never becomes the default space. The organization cannot see the personal space.
-- **Structure:** holding / legal entity / branch / department / unit / team.
-- **Roles:**
-
-| Role | Rights |
-| :--- | :--- |
-| Admin | Structure, people, invitations, all keys (never their secrets), audit log, plan. |
-| Head | Records of their unit and everything below it; offboarding people in that subtree. |
-| Member | Own records and records opened to their unit, project or the organization. |
-| Contractor | Own records and project records only; access can be time-limited. |
-| Auditor | Organization audit log without record content. |
-
-- **Visibility of a record:** author only (draft), unit (and everything below it), project, whole organization. The rule is enforced on the server on every read path: search, validation, deletion, graph links, the account and the archivist. A head does not see drafts of a person who still works there.
-- **Invitations:** a one-time link for a specific email, valid for 7 days. Emails are not sent yet — the admin passes the link on.
-- **Member keys:** members issue their own keys. Admins see the list and can revoke any key, but can never reveal or rotate someone else's key.
-- **Offboarding:** an admin or the head of the unit picks who receives the knowledge. The person's keys are revoked immediately. The recipient sees all of their records, drafts included, in the account and through their own agent, and can open them to the unit or the organization.
-- **Contractor terms:** a term in days (1–365). After the term the person cannot read or write anything and the seat is not billed. Extensions are logged.
-- **Audit log:** offboarding start and completion, reads of handed-over knowledge (account and MCP), visibility changes, access-term changes. Never record content.
-- **Not available:** SSO/SAML, email delivery of invitations, automatic billing for organizations, sharing between legal entities of a holding, directory imports.
-
-Organizations are activated by the MMW team: contact support@mmwhub.tech.
-
----
-
-## Plans
-
-| Plan | Price | Records | Calls/min |
-| :--- | :--- | :--- | :--- |
-| Free | $0, 3-day trial | 250 | 60 |
-| Starter | $5/month | up to 5,000 per project | 120 |
-| Pro | $35/month | up to 100,000 | 120 |
-| Enterprise | $117/month (SLA, NDA) | up to 1,000,000 | 300 |
-| On-premise | contact us | by agreement | — |
-
-**Organizations:** $18 per seat per month, or $14 per seat per month billed yearly; minimum 5 seats. People who left and contractors whose term ended take no seat. Pilot: 14 days, up to 10 seats.
-
-When a limit is reached, writes are refused with a clear error; reading keeps working.
-
----
-
-## Security
-
-- **Redaction:** secrets (API keys, tokens, passwords) are replaced with placeholders before storage, in records and in sessions. Records that look like an attempt to inject instructions into agent memory are rejected.
-- **Isolation:** accounts, projects and workspaces are isolated; inside an organization the visibility rules above apply.
-- **Keys:** shown once; the server keeps only a hash (PBKDF2) plus a lookup index. Revocation takes effect immediately.
-- **Logs:** MCP operation logs never contain record text.
-- **Transport:** stateless Streamable HTTP; every request is authenticated on its own, so nothing needs to reconnect after a pause.
-- **Backups:** nightly, compressed, the last 7 kept plus an off-server copy. Content (records and sessions) is backed up on Enterprise and for organizations; system data (account, payments, keys, projects) on every plan.
-
----
+The Free trial has finite limits. Paid plans also have limits; Enterprise is not an unlimited plan. Current prices, currencies, payment options and limits are in the account and on the [website](https://mmwhub.tech/#pricing). A release snapshot does not establish a recurring full-content backup entitlement for every plan. Do not use MMW as the sole backup of important information.
 
 ## Connect Kit (`connect.sh`, `connect.ps1`)
 
@@ -315,17 +141,19 @@ $env:MMW_CREDENTIAL='mmw_your_key'
 
 ---
 
-## Links
+## Directories and distribution
 
-- Website: https://mmwhub.tech
-- Account and API keys: https://app.mmwhub.tech
-- User documentation: https://docs.mmwhub.tech (Russian: https://docs.mmwhub.ru)
-- Agent skill (teaches Claude Code and Codex when to search and save): https://docs.mmwhub.tech/memory/agent-skill/
-- Add MMW to your own product: https://docs.mmwhub.tech/developers/integrate/
-- MCP endpoint: https://mcp.mmwhub.tech/mcp
-- Smithery: https://smithery.ai/servers/mmsingatullin/mmw
-- Support: support@mmwhub.tech
+- [Glama connector](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw)
+- [Official MCP Registry](https://registry.modelcontextprotocol.io/?q=io.github.msingatullin%2Fmmw)
 
-## License
+Directory descriptions may lag the live product. Their badges are directory metadata, not a latency, security or availability certification.
 
-MIT, see [LICENSE](LICENSE).
+## Contribute
+
+Use Fork → Branch → Pull Request for this public kit. Do not include API keys, private backend source or real memory contents. The public challenge tasks describe their own scopes; never probe other users or production without permission.
+
+## Links and license
+
+[Website](https://mmwhub.tech/) · [Account](https://app.mmwhub.tech/) · [Documentation](https://docs.mmwhub.tech/) · [Developer integration](https://docs.mmwhub.tech/developers/integrate/) · [Agent skill](https://docs.mmwhub.tech/memory/agent-skill/) · Support: support@mmwhub.tech
+
+MIT for this client kit: [LICENSE](LICENSE).
