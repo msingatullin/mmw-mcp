@@ -29,4 +29,4 @@ The `.mmwignore` file in this repository is an example convention for your own a
    and conflicting facts are detected.
 ```
 
-Full tool reference: [README.md](README.md#mcp-tools) and https://app.mmwhub.tech/help/user/quickstart.
+Full tool reference: [README.md](README.md#mcp-reference) and https://docs.mmwhub.tech/reference/mcp-tools/.
