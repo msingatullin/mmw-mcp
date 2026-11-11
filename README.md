@@ -9,6 +9,14 @@ Save a decision in ChatGPT. Find the same record in Codex or linked Telegram. Ke
 [![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](https://modelcontextprotocol.io/)
 [![Client kit: MIT](https://img.shields.io/badge/client_kit-MIT-green)](LICENSE)
 
+## MMW Global Developer Challenge 2026/2027
+
+The **MMW Global Developer Challenge 2026/2027** is now running on Kaggle. Explore three tracks — **Break MMW**, **Improve MMW**, and **Build With MMW** — and compete for non-monetary MMW access and MMW Cloud subscription awards.
+
+**[Join the live hackathon via Kaggle invitation link](https://www.kaggle.com/t/952904e7d0d643ad8f880c4a76ea1c87)** · [Challenge overview](https://www.kaggle.com/competitions/mmw-global-developer-challenge-2026-2027) · [Open technical challenges](https://github.com/msingatullin/mmw-mcp/issues)
+
+The organizer is working with Kaggle to make the event discoverable in the public competition directory. Until that change is confirmed, the official reusable invitation link above is the entry point. Participation is free; use only your own authorized accounts and synthetic test data. Read the official rules on Kaggle before entering.
+
 ## What you can use
 
 - **Shared memory:** connected clients save and retrieve records in the same authorized account, project and workspace. Client credentials need not be identical.
