@@ -152,7 +152,7 @@ Directory descriptions may lag the live product. Their badges are directory meta
 
 ## Contribute
 
-Use Fork → Branch → Pull Request for this public kit. Do not include API keys, private backend source or real memory contents. The public challenge tasks describe their own scopes; never probe other users or production without permission.
+Use Fork → Branch → Pull Request for this public kit. Do not include API keys, private backend source or real memory contents. Never probe other users or production without permission.
 
 ## Links and license
 
