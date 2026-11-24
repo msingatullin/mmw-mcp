@@ -9,6 +9,7 @@ Save a decision in ChatGPT. Find the same record in Codex or linked Telegram. Ke
 [![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](https://modelcontextprotocol.io/)
 [![Client kit: MIT](https://img.shields.io/badge/client_kit-MIT-green)](LICENSE)
 [![msingatullin/mmw-mcp MCP server](https://glama.ai/mcp/servers/msingatullin/mmw-mcp/badges/score.svg)](https://glama.ai/mcp/servers/msingatullin/mmw-mcp)
+[![MMW hosted connector – tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw/badges/score.svg)](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw)
 
 ## MMW Global Developer Challenge 2026/2027
 
