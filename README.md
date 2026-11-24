@@ -11,14 +11,6 @@ Save a decision in ChatGPT. Find the same record in Codex or linked Telegram. Ke
 [![msingatullin/mmw-mcp MCP server](https://glama.ai/mcp/servers/msingatullin/mmw-mcp/badges/score.svg)](https://glama.ai/mcp/servers/msingatullin/mmw-mcp)
 [![MMW hosted connector – tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw/badges/score.svg)](https://glama.ai/mcp/connectors/tech.mmwhub.mcp/mmw)
 
-## MMW Global Developer Challenge 2026/2027
-
-The **MMW Global Developer Challenge 2026/2027** is now running on Kaggle. Explore three tracks — **Break MMW**, **Improve MMW**, and **Build With MMW** — and compete for non-monetary MMW access and MMW Cloud subscription awards.
-
-**[Join the live hackathon via Kaggle invitation link](https://www.kaggle.com/t/952904e7d0d643ad8f880c4a76ea1c87)** · [Challenge overview](https://www.kaggle.com/competitions/mmw-global-developer-challenge-2026-2027) · [Open technical challenges](https://github.com/msingatullin/mmw-mcp/issues)
-
-The organizer is working with Kaggle to make the event discoverable in the public competition directory. Until that change is confirmed, the official reusable invitation link above is the entry point. Participation is free; use only your own authorized accounts and synthetic test data. Read the official rules on Kaggle before entering.
-
 ## What you can use
 
 - **Shared memory:** connected clients save and retrieve records in the same authorized account, project and workspace. Client credentials need not be identical.
